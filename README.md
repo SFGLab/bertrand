@@ -91,6 +91,14 @@ The analysis pipeline will create a directory structure in your results folder. 
 ```
 Most of the scripts cache intermediate results (distance matrices, model checkpoints etc), these are omitted for brevity. 
 
+### Downloads
+
+The pre-computed results can be downloaded [here.](https://drive.google.com/file/d/1U4lA9TsW0IQJXSk-7e478AAUU_59jNdV/view?usp=sharing)
+<br>
+Moreover, you can download a single model checkpoint if you just want to do inference [here.](https://drive.google.com/file/d/1FywbDbzhhYbwf99MdZrpYQEbXmwX9Zxm/view?usp=sharing)
+<br>
+All intermediate results for full reproducibility are available upon request. 
+
 ### Pre-training
 ```
 bash pretraining.sh <results>/pretraining
@@ -143,11 +151,14 @@ This is pretty trivial, below is a minimal example to get logits, attention oupu
 
 
 ```python
-model = BERTrand.from_pretrained(args.model)
+from bertrand.model import BERTrand
+from bertrand.model.inference import PeptideTCRDataset, single_obs_to_tensor
+
+model = BERTrand.from_pretrained("<model checkpoint>") # see Downloads section
 model.eval() # don't forget this
 input = PeptideTCRDataset.encode_peptide_cdr3b("ELAGIGLTV", "CASSGRGQEYF")
 input = single_obs_to_tensor(input)
-logits, attentions, hidden_states = model(**input, output_attentions=True, output_hidden_states=True)
+logits, attentions, hidden_states = model(**input, output_attentions=True, output_hidden_states=True, return_dict=False)
 
 ```
 

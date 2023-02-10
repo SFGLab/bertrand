@@ -7,7 +7,7 @@ import torch
 
 from bertrand.model.model import BERTrand
 from bertrand.training.dataset import PeptideTCRDataset
-from training.evaluate import get_trainer
+from bertrand.training.evaluate import get_trainer
 
 
 def parse_args() -> argparse.Namespace:
