@@ -3,7 +3,7 @@ from typing import Dict, Union
 import numpy as np
 import pandas as pd
 import torch
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, average_precision_score
 from transformers import EvalPrediction
 from transformers.trainer_utils import PredictionOutput
 
@@ -51,6 +51,7 @@ def mean_auroc_per_peptide_cluster_probs(
     probs = probs[subset_mask]
     peptide_clusters_subset = peptide_clusters[subset_mask]
     rocs = []
+    aps = []
     counts = []
     peptide_clusters = []
 
@@ -58,12 +59,16 @@ def mean_auroc_per_peptide_cluster_probs(
         peptide_cluster_mask = peptide_clusters_subset == peptide_cluster
         labels_pep = labels[peptide_cluster_mask]
         if len(set(labels_pep)) == 2:
-            roc = roc_auc_score(labels_pep, probs[peptide_cluster_mask])
+            probs_pep = probs[peptide_cluster_mask]
+            roc = roc_auc_score(labels_pep, probs_pep)
+            ap = average_precision_score(labels_pep, probs_pep)
+
             rocs.append(roc)
+            aps.append(ap)
             count = (labels_pep == 1).sum()
             counts.append(count)
             peptide_clusters.append(peptide_cluster)
 
     if agg:
-        return {"roc": np.mean(rocs), "roc_std": np.std(rocs)}
-    return pd.DataFrame(data={"rocs": rocs, "n": counts, "peptide": peptide_clusters,})
+        return {"roc": np.mean(rocs), "roc_std": np.std(rocs), "ap": np.mean(aps), "ap_std": np.std(aps)}
+    return pd.DataFrame(data={"rocs": rocs, "aps": aps, "n": counts, "peptide": peptide_clusters,})
