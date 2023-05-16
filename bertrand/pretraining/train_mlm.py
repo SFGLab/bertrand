@@ -11,7 +11,7 @@ from transformers import (
     DataCollatorForLanguageModeling,
 )
 
-from bertrand.training.config import BERT_CONFIG, MLM_TRAINING_ARGS
+from bertrand.training.config import MLM_TRAINING_ARGS
 from bertrand.pretraining.dataset_mlm import PeptideTCRMLMDataset
 from bertrand.model.tokenization import tokenizer
 
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     train_dataset = PeptideTCRMLMDataset(train)
     val_dataset = PeptideTCRMLMDataset(val)
 
-    model = BertForMaskedLM(BERT_CONFIG)
+    model = BertForMaskedLM.from_pretrained("Rostlab/prot_bert")
     data_collator = DataCollatorForLanguageModeling(
         tokenizer=tokenizer, mlm=True, mlm_probability=args.mlm_frac
     )
