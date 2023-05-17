@@ -4,7 +4,7 @@ import logging
 import os
 
 import pandas as pd
-from transformers import TrainingArguments, DataCollatorWithPadding, Trainer, BertForMaskedLM
+from transformers import TrainingArguments, DataCollatorWithPadding, Trainer, BertForSequenceClassification
 
 from bertrand.training.dataset import PeptideTCRDataset
 from bertrand.training.metrics import mean_auroc_per_peptide_cluster
@@ -132,7 +132,7 @@ if __name__ == "__main__":
             train_dataset = PeptideTCRDataset(dataset, cv_seed=cv_seed, subset="train")
             val_dataset = PeptideTCRDataset(dataset, cv_seed=cv_seed, subset="val+test")
             logging.info("Training started")
-            model = BertForMaskedLM.from_pretrained("Rostlab/prot_bert")
+            model = BertForSequenceClassification.from_pretrained("Rostlab/prot_bert")
             train_and_evaluate(
                 train_dataset, val_dataset, model, args.model_ckpt, dataset_out_dir,
             )
