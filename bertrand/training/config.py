@@ -28,6 +28,7 @@ SUPERVISED_TRAINING_ARGS = dict(
     logging_steps=10,  # logging every 10 steps
     evaluation_strategy="epoch",  # model is evaluated every epoch
     save_strategy="epoch",  # model is saved every epoch
+    metric_for_best_model="roc",
 )
 
 # Training args for MLM
