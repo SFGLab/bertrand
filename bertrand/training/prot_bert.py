@@ -1,16 +1,15 @@
 from transformers import BertForSequenceClassification
 import torch
-from torch import nn
 from transformers.modeling_outputs import SequenceClassifierOutput
 
 from bertrand.model.focal_loss import FocalLoss
 
 PRE_TRAINED_MODEL_NAME = 'Rostlab/prot_bert'
-class ProteinClassifier(nn.Module):
-    def __init__(self):
-        super(ProteinClassifier, self).__init__()
+class ProteinClassifier(BertForSequenceClassification):
+    def __init__(self, config):
+        super().__init__(config)
         self.num_labels = 2
-        self.bert = BertForSequenceClassification.from_pretrained(PRE_TRAINED_MODEL_NAME)
+        self.config = config
         
     def forward(
         self,
@@ -26,7 +25,7 @@ class ProteinClassifier(nn.Module):
         output_hidden_states: bool = None,
         return_dict: bool = None,
     ):
-        outputs = self.bert(
+        outputs = super().forward(
             input_ids,
             attention_mask=attention_mask,
             token_type_ids=token_type_ids,

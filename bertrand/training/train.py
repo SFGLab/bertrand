@@ -10,7 +10,7 @@ from bertrand.training.dataset import PeptideTCRDataset
 from bertrand.training.metrics import mean_auroc_per_peptide_cluster
 from bertrand.training.config import SUPERVISED_TRAINING_ARGS
 from bertrand.model.tokenization import tokenizer
-from bertrand.training.prot_bert import ProteinClassifier
+from bertrand.training.prot_bert import PRE_TRAINED_MODEL_NAME, ProteinClassifier
 
 
 def parse_args() -> argparse.Namespace:
@@ -88,7 +88,7 @@ def train_and_evaluate(
     training_args = get_training_args(output_dir)
     data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
 
-    model = ProteinClassifier()
+    model = ProteinClassifier.from_pretrained(PRE_TRAINED_MODEL_NAME)
 
     trainer = Trainer(
         model=model,
