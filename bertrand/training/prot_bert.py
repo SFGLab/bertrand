@@ -45,7 +45,7 @@ class ProteinClassifier(BertForSequenceClassification):
             loss = torch.mean(loss * weights)
 
         if not return_dict:
-            output = (logits, outputs.hidden_states, outputs.attentions,)
+            output = (logits,)
             return ((loss,) + output) if loss is not None else output
 
         return SequenceClassifierOutput(
