@@ -4,7 +4,7 @@ from transformers.modeling_outputs import SequenceClassifierOutput
 
 from bertrand.model.focal_loss import FocalLoss
 
-PRE_TRAINED_MODEL_NAME = 'Rostlab/prot_bert'
+PRE_TRAINED_MODEL_NAME = 'yarongef/DistilProtBert'
 class ProteinClassifier(BertForSequenceClassification):
     def __init__(self, config):
         super().__init__(config)

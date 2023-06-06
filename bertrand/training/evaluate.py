@@ -1,7 +1,6 @@
 import os
 import shutil
 from copy import deepcopy
-from functools import partial
 from glob import glob
 from typing import Union, List, Tuple, Dict
 
@@ -14,8 +13,8 @@ from transformers.trainer_utils import PredictionOutput
 from bertrand.training.config import SUPERVISED_TRAINING_ARGS
 from bertrand.training.dataset import PeptideTCRDataset
 from bertrand.training.metrics import mean_auroc_per_peptide_cluster
-from bertrand.model.model import BERTrand
 from bertrand.model.tokenization import tokenizer
+from bertrand.training.prot_bert import ProteinClassifier
 from bertrand.training.utils import get_last_ckpt, load_metrics_df
 
 import argparse
@@ -47,7 +46,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def get_trainer(
-    model: BERTrand, test_dataset: PeptideTCRDataset, batch_size: int = 512
+    model: ProteinClassifier, test_dataset: PeptideTCRDataset, batch_size: int = 512
 ) -> Trainer:
     """
     Creates a Trainer for the model to do inference on a dataset
@@ -70,7 +69,7 @@ def get_trainer(
 
 
 def get_predictions(
-    model: BERTrand, test_dataset: PeptideTCRDataset
+    model: ProteinClassifier, test_dataset: PeptideTCRDataset
 ) -> PredictionOutput:
     """
     Performs inference on a dataset
@@ -90,7 +89,7 @@ def evaluate_cancer(cancer_dataset: PeptideTCRDataset, ckpt: str) -> pd.DataFram
     :param ckpt: model checkpoint folder
     :return: dataframe with AUROC for every peptide
     """
-    model = BERTrand.from_pretrained(ckpt)
+    model = ProteinClassifier.from_pretrained(ckpt)
     model.eval()
 
     predictions = get_predictions(model, cancer_dataset)
