@@ -29,7 +29,7 @@ class PeptideTCRDataset(Dataset):
             self.examples = dataset.copy().drop(columns=["y"])
         else:
             self.examples = self.split_dataset(cv_seed, dataset, subset)
-            # self.calc_weights()
+            self.calc_weights()
 
     def split_dataset(self, cv_seed: int, dataset: pd.DataFrame, subset: str):
         """
