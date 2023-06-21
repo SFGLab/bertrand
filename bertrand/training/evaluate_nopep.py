@@ -97,7 +97,7 @@ def evaluate_cancer(cancer_dataset: PeptideTCRDataset, ckpt: str) -> pd.DataFram
 
     cancer_res = mean_auroc_per_peptide_cluster(
         predictions,
-        cancer_dataset.examples.peptide_seq,
+        pd.Series('all', index=cancer_dataset.examples.index),
         cancer_dataset.examples.split == "cancer",
         agg=False,
     )
@@ -124,7 +124,7 @@ def metrics_per_epoch(
     for i, predictions in enumerate(pred_list):
         epoch_results_val = mean_auroc_per_peptide_cluster(
             predictions,
-            val_dataset.examples[peptide_col],
+            pd.Series('all', index=val_dataset.examples.index),
             val_dataset.examples.split == subset,
             agg=False,
         )
@@ -157,7 +157,7 @@ def aggregate_metrics_per_epoch(
     )
     average = metrics_df.mean(axis=0)
     std = metrics_df.std(axis=0)
-    return weighted_average, average, std
+    return average, average, std
 
 
 def plot_metrics_per_epoch(
@@ -183,11 +183,11 @@ def plot_metrics_per_epoch(
     fig, axs = plt.subplots(nrows=2)
     epochs = np.arange(auroc_per_epoch_val.shape[1])
     axs[0].plot(epochs, auroc_average_val, label="average")
-    axs[0].plot(epochs, auroc_weighted_average_val, label="weighted average")
+    # axs[0].plot(epochs, auroc_weighted_average_val, label="weighted average")
     axs[0].legend()
 
     auroc_per_epoch_val.T.plot(ax=axs[1])
-    axs[1].plot(epochs, auroc_weighted_average_test, "r--", linewidth=3)
+    # axs[1].plot(epochs, auroc_weighted_average_test, "r--", linewidth=3)
     axs[1].plot(epochs, auroc_average_test, "g--", linewidth=3)
     axs[1].set_title("Test ROC AUC per peptide")
     axs[1].set_xlabel("epochs")
@@ -268,7 +268,7 @@ def evaluate_model(
 
     test_res = mean_auroc_per_peptide_cluster(
         best_predictions,
-        val_test_dataset.examples.peptide_seq,
+        pd.Series('all', index=val_test_dataset.examples.index),
         val_test_dataset.examples.split == "test",
         agg=False,
     )
