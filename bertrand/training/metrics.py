@@ -53,6 +53,7 @@ def mean_auroc_per_peptide_cluster_probs(
     rocs = []
     aps = []
     counts = []
+    counts_neg = []
     peptide_clusters = []
 
     for peptide_cluster in np.unique(peptide_clusters_subset):
@@ -67,8 +68,8 @@ def mean_auroc_per_peptide_cluster_probs(
             aps.append(ap)
             count = (labels_pep == 1).sum()
             counts.append(count)
+            counts_neg.append((labels_pep == 0).sum())
             peptide_clusters.append(peptide_cluster)
-
     if agg:
         return {"roc": np.mean(rocs), "roc_std": np.std(rocs), "ap": np.mean(aps), "ap_std": np.std(aps)}
-    return pd.DataFrame(data={"rocs": rocs, "aps": aps, "n": counts, "peptide": peptide_clusters,})
+    return pd.DataFrame(data={"rocs": rocs, "aps": aps, "n": counts, "nn": counts_neg, "peptide": peptide_clusters,})
