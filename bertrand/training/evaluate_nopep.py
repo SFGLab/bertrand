@@ -12,7 +12,7 @@ from transformers import DataCollatorWithPadding, Trainer, TrainingArguments
 from transformers.trainer_utils import PredictionOutput
 
 from bertrand.training.config import SUPERVISED_TRAINING_ARGS
-from bertrand.training.dataset_nopep import PeptideTCRDataset
+from bertrand.training.dataset_nopep import TCRDataset
 from bertrand.training.metrics import mean_auroc_per_peptide_cluster
 from bertrand.model.model import BERTrand
 from bertrand.model.tokenization import tokenizer
@@ -43,6 +43,15 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--out", type=str, required=True, help="Path to output file",
     )
+    
+    parser.add_argument(
+        "--ablation", type=str, required=True, help="Pep ablation",
+    )
+    
+    parser.add_argument(
+        "--weights", type=bool, required=True, help="Pep weights",
+    )
+    
     return parser.parse_args()
 
 
@@ -226,7 +235,7 @@ def get_epochs_to_step(model_dir: str) -> Union[Dict[int, int], None]:
 
 
 def evaluate_model(
-    model_dir: str, dataset: pd.DataFrame, dataset_name: str, plot: bool = True
+    model_dir: str, dataset: pd.DataFrame, dataset_name: str, ablation:str, weights: bool, plot: bool = True
 ) -> Union[pd.DataFrame, None]:
     """
     This function evaluates the previously trained model on the test set and an independent cancer set
@@ -244,8 +253,8 @@ def evaluate_model(
         logging.info("Skipping, no checkpoints found")
         return None
 
-    val_test_dataset = PeptideTCRDataset(dataset, cv_seed, "val+test")
-    cancer_dataset = PeptideTCRDataset(dataset, cv_seed, "cancer")
+    val_test_dataset = TCRDataset(dataset, cv_seed, "val+test", peptide_ablation=ablation, weights=weights)
+    cancer_dataset = TCRDataset(dataset, cv_seed, "cancer",  peptide_ablation=ablation, weights=weights)
 
     pred_fn = os.path.join(model_dir, "predictions.pkl")
     if not os.path.isfile(pred_fn):
@@ -311,7 +320,7 @@ if __name__ == "__main__":
         dataset = pd.read_csv(dataset_fn, low_memory=False)
 
         for model_dir in sorted(glob(os.path.join(dataset_results_dir, "cv_seed=*"))):
-            model_results = evaluate_model(model_dir, dataset, dataset_name, plot=True)
+            model_results = evaluate_model(model_dir, dataset, dataset_name, args.ablation, bool(args.weights), plot=True)
             if model_results is not None:
                 results.append(model_results)
 

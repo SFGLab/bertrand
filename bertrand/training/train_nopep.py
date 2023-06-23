@@ -6,7 +6,7 @@ import os
 import pandas as pd
 from transformers import TrainingArguments, DataCollatorWithPadding, Trainer
 
-from bertrand.training.dataset_nopep import PeptideTCRDataset
+from bertrand.training.dataset_nopep import TCRDataset
 from bertrand.training.metrics import mean_auroc_per_peptide_cluster
 from bertrand.training.config import BERT_CONFIG, SUPERVISED_TRAINING_ARGS
 from bertrand.model.model import BERTrand
@@ -44,6 +44,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--n-splits", type=int, default=21, help="Number of CV splits",
     )
+    
+    parser.add_argument(
+        "--ablation", type=str, required=True, help="Pep ablation",
+    )
+    
+    parser.add_argument(
+        "--weights", type=bool, required=True, help="Pep weights",
+    )
 
     return parser.parse_args()
 
@@ -66,6 +74,8 @@ def train_and_evaluate(
     model_class,
     model_ckpt: str,
     output_dir: str,
+    ablation: str,
+    weights: bool,
 ) -> None:
     """
     Trains and evaluates the model.
@@ -129,8 +139,8 @@ if __name__ == "__main__":
                 logging.info(f"Directory {dataset_out_dir} already exists, skipping")
                 continue
             logging.info("Splitting the dataset")
-            train_dataset = PeptideTCRDataset(dataset, cv_seed=cv_seed, subset="train")
-            val_dataset = PeptideTCRDataset(dataset, cv_seed=cv_seed, subset="val+test")
+            train_dataset = TCRDataset(dataset, cv_seed=cv_seed, subset="train", peptide_ablation=args.ablation, weights=bool(args.weights))
+            val_dataset = TCRDataset(dataset, cv_seed=cv_seed, subset="val+test+cancer", peptide_ablation=args.ablation, weights=bool(args.weights))
             logging.info("Training started")
             train_and_evaluate(
                 train_dataset, val_dataset, BERTrand, args.model_ckpt, dataset_out_dir,

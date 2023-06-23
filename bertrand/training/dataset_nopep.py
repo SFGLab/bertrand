@@ -6,7 +6,7 @@ from bertrand.model.tokenization import tokenizer
 from typing import Dict, Literal
 
 
-class PeptideTCRDataset(Dataset):
+class TCRDataset(Dataset):
     """
     This class represents peptide:TCR dataset for model training
     """
@@ -18,6 +18,8 @@ class PeptideTCRDataset(Dataset):
         subset: Literal[
             "train", "val", "test", "cancer", "val+test", "val+test+cancer", "inference"
         ],
+        peptide_ablation,
+        weights,
     ):
         """
         Class constructor
@@ -30,6 +32,12 @@ class PeptideTCRDataset(Dataset):
         else:
             self.examples = self.split_dataset(cv_seed, dataset, subset)
             self.calc_weights()
+        if peptide_ablation == 'unknown':
+            self.peptide = 'XXXXXXXXX'
+        elif peptide_ablation == 'missing':
+            self.peptide = ''
+        raise NotImplementedError()
+        self.weights = weights
 
     def split_dataset(self, cv_seed: int, dataset: pd.DataFrame, subset: str):
         """
@@ -86,12 +94,16 @@ class PeptideTCRDataset(Dataset):
         # # 1 / pep_w gives very low weights for popular peptide clusters
         # pep_w = 1 / np.log(2 + pep_w)
 
-        tcr_count = self.examples.tcr_cluster.value_counts()
-        tcr_w = tcr_count.loc[self.examples.tcr_cluster].values
-        # 1 / tcr_w gives very low weights for popular TCR clusters
-        tcr_w = 1 / np.log(2 + tcr_w)  #
-
-        weights = tcr_w
+#         tcr_count = self.examples.tcr_cluster.value_counts()
+#         tcr_w = tcr_count.loc[self.examples.tcr_cluster].values
+#         # 1 / tcr_w gives very low weights for popular TCR clusters
+#         tcr_w = 1 / np.log(2 + tcr_w)  #
+        
+        if self.weights:
+            weights = tcr_w
+        else:
+            weights = np.ones(len(self.examples))
+        
         self.examples.loc[:, "weight"] = weights
 
         # from matplotlib import pyplot as plt
@@ -127,7 +139,7 @@ class PeptideTCRDataset(Dataset):
         :return: dictionary with `input_ids`, `token_type_ids`, `attention_mask`, and optionally `labels` and `weights`
         """
         row = self.examples.iloc[i]
-        input = PeptideTCRDataset.encode_peptide_cdr3b('', row.CDR3b)
+        input = PeptideTCRDataset.encode_peptide_cdr3b(self.peptide, row.CDR3b)
         if "y" in self.examples.columns:
             input.data["labels"] = row.y
         if "weight" in self.examples.columns:
