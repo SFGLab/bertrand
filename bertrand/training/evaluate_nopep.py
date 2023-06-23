@@ -56,7 +56,7 @@ def parse_args() -> argparse.Namespace:
 
 
 def get_trainer(
-    model: BERTrand, test_dataset: PeptideTCRDataset, batch_size: int = 512
+    model: BERTrand, test_dataset: TCRDataset, batch_size: int = 512
 ) -> Trainer:
     """
     Creates a Trainer for the model to do inference on a dataset
@@ -79,7 +79,7 @@ def get_trainer(
 
 
 def get_predictions(
-    model: BERTrand, test_dataset: PeptideTCRDataset
+    model: BERTrand, test_dataset: TCRDataset
 ) -> PredictionOutput:
     """
     Performs inference on a dataset
@@ -92,7 +92,7 @@ def get_predictions(
     return predictions
 
 
-def evaluate_cancer(cancer_dataset: PeptideTCRDataset, ckpt: str) -> pd.DataFrame:
+def evaluate_cancer(cancer_dataset: TCRDataset, ckpt: str) -> pd.DataFrame:
     """
     Evaluate the model on an independent cancer set
     :param cancer_dataset: peptide:TCR dataset for cancer peptides
@@ -116,7 +116,7 @@ def evaluate_cancer(cancer_dataset: PeptideTCRDataset, ckpt: str) -> pd.DataFram
 
 def metrics_per_epoch(
     pred_list: List[PredictionOutput],
-    val_dataset: PeptideTCRDataset,
+    val_dataset: TCRDataset,
     subset: str,
     peptide_col: str = "peptide_seq",
 ) -> pd.DataFrame:

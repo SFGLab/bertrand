@@ -69,8 +69,8 @@ def get_training_args(output_dir: str) -> TrainingArguments:
 
 
 def train_and_evaluate(
-    train_dataset: PeptideTCRDataset,
-    val_dataset: PeptideTCRDataset,
+    train_dataset: TCRDataset,
+    val_dataset: TCRDataset,
     model_class,
     model_ckpt: str,
     output_dir: str,
