@@ -69,7 +69,7 @@ if __name__ == "__main__":
     train_dataset = PeptideTCRMLMDataset(train)
     val_dataset = PeptideTCRMLMDataset(val)
 
-    model = BertForMaskedLM.from_pretrained("Rostlab/prot_bert")
+    model = BertForMaskedLM.from_pretrained("yarongef/DistilProtBert")
     data_collator = DataCollatorForLanguageModeling(
         tokenizer=tokenizer, mlm=True, mlm_probability=args.mlm_frac
     )

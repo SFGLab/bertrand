@@ -1,4 +1,4 @@
-set -x
+set -ex
 DIR=$1
 
 mkdir -p "$DIR"
