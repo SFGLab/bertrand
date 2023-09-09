@@ -33,7 +33,7 @@ SUPERVISED_TRAINING_ARGS = dict(
 
 # Training args for MLM
 MLM_TRAINING_ARGS = dict(
-    num_train_epochs=100,  # total number of training epochs
+    num_train_epochs=25,  # total number of training epochs
     per_device_train_batch_size=32,  # batch size per device during training
     per_device_eval_batch_size=64,  # batch size for evaluation
     warmup_steps=10000,  # number of warmup steps for learning rate scheduler
