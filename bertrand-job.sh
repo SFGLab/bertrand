@@ -12,6 +12,6 @@ pwd; hostname; date
 source /home2/sfglab/yvladyslav/anaconda3/etc/profile.d/conda.sh
 cd bertrand
 conda activate bertrand
-./analysis.sh "/home2/sfglab/yvladyslav/distilbert/bertrand_results" 4
+./analysis.sh "/home2/sfglab/yvladyslav/pretrain-mlm/bertrand_results" 4
  
 date

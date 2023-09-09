@@ -8,9 +8,9 @@ from transformers import TrainingArguments, DataCollatorWithPadding, Trainer
 
 from bertrand.training.dataset import PeptideTCRDataset
 from bertrand.training.metrics import mean_auroc_per_peptide_cluster
-from bertrand.training.config import SUPERVISED_TRAINING_ARGS
+from bertrand.training.config import BERT_CONFIG, SUPERVISED_TRAINING_ARGS
+from bertrand.model.model import BERTrand
 from bertrand.model.tokenization import tokenizer
-from bertrand.training.prot_bert import PRE_TRAINED_MODEL_NAME, ProteinClassifier
 
 
 def parse_args() -> argparse.Namespace:
@@ -63,6 +63,8 @@ def get_training_args(output_dir: str) -> TrainingArguments:
 def train_and_evaluate(
     train_dataset: PeptideTCRDataset,
     val_dataset: PeptideTCRDataset,
+    model_class,
+    model_ckpt: str,
     output_dir: str,
 ) -> None:
     """
@@ -75,6 +77,7 @@ def train_and_evaluate(
     :param output_dir: folder to save model checkpoints and predictions for `val_dataset` for every epoch
     """
     predictions = []
+    logging.info(f"Model class: {model_class}")
 
     def compute_metrics_and_save_predictions(p):
         predictions.append(p)
@@ -85,11 +88,15 @@ def train_and_evaluate(
             True,
         )
 
+    if model_ckpt:
+        logging.info(f"Loading model from {model_ckpt}")
+        model = model_class.from_pretrained(model_ckpt)
+    else:
+        logging.info("Initializing model from scratch")
+        model = model_class(BERT_CONFIG)
+
     training_args = get_training_args(output_dir)
     data_collator = DataCollatorWithPadding(tokenizer=tokenizer)
-
-    model = ProteinClassifier.from_pretrained(PRE_TRAINED_MODEL_NAME)
-
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -126,5 +133,5 @@ if __name__ == "__main__":
             val_dataset = PeptideTCRDataset(dataset, cv_seed=cv_seed, subset="val+test")
             logging.info("Training started")
             train_and_evaluate(
-                train_dataset, val_dataset, dataset_out_dir,
+                train_dataset, val_dataset, BERTrand, args.model_ckpt, dataset_out_dir,
             )
