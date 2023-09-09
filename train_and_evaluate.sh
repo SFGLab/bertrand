@@ -1,4 +1,4 @@
-set -x
+set -ex
 DATA_DIR=$1
 MODEL_DIR=$2
 OUT_DIR=$3
