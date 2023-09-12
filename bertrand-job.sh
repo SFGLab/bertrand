@@ -4,7 +4,7 @@
 #SBATCH --ntasks=16                  
 #SBATCH --mem=128gb
 #SBATCH --gpus=a100:2
-#SBATCH --time=72:00:00               # maksymalny limit czasu DD-HH:MM:SS
+#SBATCH --time=5-00:00:00               # maksymalny limit czasu DD-HH:MM:SS
 #SBATCH --partition=long
 
 pwd; hostname; date
