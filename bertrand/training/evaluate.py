@@ -293,7 +293,7 @@ def evaluate_model(
         plt.close(fig)
 
     if plot:
-        for metric in ["f1s", "accuracies", "pr_aucs"]:
+        for metric in ["rocs", "f1s", "accuracies", "pr_aucs"]:
             metric_val = metrics_per_epoch(pred_list, val_test_dataset, subset="val", metric=metric)
             weighted_average_val, average_val, std_val = aggregate_metrics_per_epoch(metric_val)
 

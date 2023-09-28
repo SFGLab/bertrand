@@ -5,11 +5,11 @@ OUT_DIR=$3
 
 mkdir -p "$OUT_DIR"
 
-python -m bertrand.training.train \
-  --input-dir=$DATA_DIR \
-  --model-ckpt=$MODEL_DIR \
-  --output-dir=$OUT_DIR \
-  --n-splits=1
+# python -m bertrand.training.train \
+#   --input-dir=$DATA_DIR \
+#   --model-ckpt=$MODEL_DIR \
+#   --output-dir=$OUT_DIR \
+#   --n-splits=1
 
 python -m bertrand.training.evaluate \
   --datasets-dir=$DATA_DIR \
