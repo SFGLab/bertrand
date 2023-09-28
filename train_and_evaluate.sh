@@ -9,7 +9,7 @@ python -m bertrand.training.train \
   --input-dir=$DATA_DIR \
   --model-ckpt=$MODEL_DIR \
   --output-dir=$OUT_DIR \
-  --n-splits=1
+  --n-splits=7
 
 python -m bertrand.training.evaluate \
   --datasets-dir=$DATA_DIR \
