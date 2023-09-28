@@ -109,6 +109,7 @@ def metrics_per_epoch(
     pred_list: List[PredictionOutput],
     val_dataset: PeptideTCRDataset,
     subset: str,
+    metric: str = "rocs",
     peptide_col: str = "peptide_seq",
 ) -> pd.DataFrame:
     """
@@ -129,7 +130,7 @@ def metrics_per_epoch(
             agg=False,
         )
         n = epoch_results_val.set_index("peptide").n
-        epoch_results_val = epoch_results_val.set_index("peptide").rocs
+        epoch_results_val = epoch_results_val.set_index("peptide")[metric]
         epoch_results_val.name = i
         rocs_list.append(epoch_results_val)
 
@@ -291,6 +292,27 @@ def evaluate_model(
         )
         fig.savefig(os.path.join(model_dir, "metrics.png"), dpi=300)
         plt.close(fig)
+
+    if plot:
+        for metric in ["rocs", "f1s", "accuracies", "pr_aucs"]:
+            metric_val = metrics_per_epoch(pred_list, val_test_dataset, subset="val", metric=metric)
+            weighted_average_val, average_val, std_val = aggregate_metrics_per_epoch(metric_val)
+
+            metric_test = metrics_per_epoch(pred_list, val_test_dataset, subset="test", metric=metric)
+            weighted_average_test, average_test, std_test = aggregate_metrics_per_epoch(
+                metric_test
+            )
+
+            epochs = np.arange(metric_test.shape[1])
+
+            fig = plt.figure()
+            ax = fig.gca()
+            ax.set_xlabel("Epochs")
+            ax.set_ylabel("Value")
+            ax.plot(epochs, average_val, label="Average")
+            ax.plot(epochs, weighted_average_val, label="Weighted average")
+            ax.legend()
+            fig.savefig(os.path.join(model_dir, metric + ".png"), dpi=300)
 
     best_ckpt_result_dir = os.path.join(model_dir, "best_checkpoint")
     logging.info(f"Copying {best_epoch_checkpoint} to {best_ckpt_result_dir}")

@@ -3,7 +3,7 @@ from typing import Dict, Union
 import numpy as np
 import pandas as pd
 import torch
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import roc_auc_score, f1_score, accuracy_score, average_precision_score
 from transformers import EvalPrediction
 from transformers.trainer_utils import PredictionOutput
 
@@ -51,6 +51,9 @@ def mean_auroc_per_peptide_cluster_probs(
     probs = probs[subset_mask]
     peptide_clusters_subset = peptide_clusters[subset_mask]
     rocs = []
+    f1s = []
+    accuracies = []
+    pr_aucs = []
     counts = []
     peptide_clusters = []
 
@@ -59,11 +62,33 @@ def mean_auroc_per_peptide_cluster_probs(
         labels_pep = labels[peptide_cluster_mask]
         if len(set(labels_pep)) == 2:
             roc = roc_auc_score(labels_pep, probs[peptide_cluster_mask])
+            f1 = f1_score(labels_pep, probs[peptide_cluster_mask] > 0.5)
+            accuracy = accuracy_score(labels_pep, probs[peptide_cluster_mask] > 0.5)
+            pr_auc = average_precision_score(labels_pep, probs[peptide_cluster_mask])
             rocs.append(roc)
+            f1s.append(f1)
+            accuracies.append(accuracy)
+            pr_aucs.append(pr_auc)
             count = (labels_pep == 1).sum()
             counts.append(count)
             peptide_clusters.append(peptide_cluster)
 
     if agg:
-        return {"roc": np.mean(rocs), "roc_std": np.std(rocs)}
-    return pd.DataFrame(data={"rocs": rocs, "n": counts, "peptide": peptide_clusters,})
+        return {
+            "roc": np.mean(rocs),
+            "roc_std": np.std(rocs),
+            "f1": np.mean(f1s),
+            "f1_std": np.std(f1s),
+            "accuracy": np.mean(accuracies),
+            "accuracy_std": np.std(accuracies),
+            "pr_auc": np.mean(pr_aucs),
+            "pr_auc_std": np.std(pr_aucs),
+        }
+    return pd.DataFrame(data={
+        "rocs": rocs,
+        "f1s": f1s,
+        "accuracies": accuracies,
+        "pr_aucs": pr_aucs,
+        "n": counts,
+        "peptide": peptide_clusters,
+    })
