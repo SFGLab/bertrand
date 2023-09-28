@@ -306,8 +306,10 @@ def evaluate_model(
 
             fig = plt.figure()
             ax = fig.gca()
-            ax.plot(epochs, average_val, label="average")
-            ax.plot(epochs, weighted_average_val, label="weighted average")
+            ax.set_xlabel("Epochs")
+            ax.set_ylabel("Value")
+            ax.plot(epochs, average_val, label="Average")
+            ax.plot(epochs, weighted_average_val, label="Weighted average")
             ax.legend()
             fig.savefig(os.path.join(model_dir, metric + ".png"), dpi=300)
 

@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --mail-type=ALL          # Powiadomienia mailowe. Opcje: NONE, BEGIN, END, FAIL, ALL
 #SBATCH --mail-user=jacenko.vlad@gmail.com     # adres e-mail
-#SBATCH --ntasks=4                  
-#SBATCH --mem=32gb
+#SBATCH --ntasks=8               
+#SBATCH --mem=64gb
 #SBATCH --gpus=a100:1
-#SBATCH --time=12:00:00               # maksymalny limit czasu DD-HH:MM:SS
+#SBATCH --time=24:00:00               # maksymalny limit czasu DD-HH:MM:SS
 #SBATCH --partition=short
 
 pwd; hostname; date
