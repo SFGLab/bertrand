@@ -46,7 +46,7 @@ from bertrand.training.cv import split_train_val_test
 
 dataset = pd.read_csv('results/negative_decoys/datasets/dataset_42.csv.gz')
 cancer = dataset[dataset.is_cancer]
-train, val, test = split_train_val_test(dataset, cv_seed=42) 
+train, val, test = split_train_val_test(dataset, seed=42) 
 ```
 
 ## Analysis
