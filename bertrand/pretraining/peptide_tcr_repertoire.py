@@ -80,11 +80,10 @@ def read_peptides(fn: str) -> pd.DataFrame:
     logging.info(f"{len(presented_peptides)} peptides read")
     presented_unique = (
         presented_peptides.reset_index()
-        .groupby("Peptide2")
+        .groupby("peptide_seq")
         .agg(
             {
                 "HLA_type": lambda x: "|".join(sorted(x)),
-                "index": lambda x: "|".join(sorted(x)),
             }
         )
         .reset_index()
@@ -114,7 +113,7 @@ def sample_peptide_tcr_repertoire(
     )
 
     peptides_sampled.loc[:, "CDR3b"] = synthetic_tcrs.values
-    peptide_tcr_repertoire = peptides_sampled.rename(columns={"Peptide2": "Peptide"})
+    peptide_tcr_repertoire = peptides_sampled.rename(columns={"peptide_seq": "Peptide"})
     return peptide_tcr_repertoire
 
 

@@ -1,7 +1,6 @@
 import os
 import shutil
 from copy import deepcopy
-from functools import partial
 from glob import glob
 from typing import Union, List, Tuple, Dict
 
